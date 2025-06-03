@@ -27,6 +27,14 @@ export async function exportToMarkdown(authorStats, allCasts, options = {}) {
   const avgEngagementPerCast = totalCasts > 0 ? (totalEngagement / totalCasts).toFixed(2) : 0;
   const avgCastsPerDay = (totalCasts / daysDiff).toFixed(1);
   
+  // Calculate total score (weighted average of key metrics)
+  const totalScore = (
+    (totalCasts * 0.3) + // 30% weight for total casts
+    (totalAuthors * 0.2) + // 20% weight for unique authors
+    (avgEngagementPerCast * 0.3) + // 30% weight for engagement
+    (avgCastsPerDay * 0.2) // 20% weight for daily activity
+  ).toFixed(1);
+  
   let markdown = `# Celo Channel Analysis Report - May 2025
 
 **Generated:** ${new Date().toLocaleString()}  
@@ -45,6 +53,18 @@ export async function exportToMarkdown(authorStats, allCasts, options = {}) {
 | **Avg Casts/Day** | ${avgCastsPerDay} |
 | **Total Engagement** | ${totalEngagement.toLocaleString()} interactions |
 | **Avg Engagement/Cast** | ${avgEngagementPerCast} interactions |
+
+## 📈 Channel Performance Score
+
+| Metric | Value | Weight | Score |
+|--------|-------|--------|-------|
+| Total Casts | ${totalCasts.toLocaleString()} | 30% | ${(totalCasts * 0.3).toFixed(1)} |
+| Unique Authors | ${totalAuthors.toLocaleString()} | 20% | ${(totalAuthors * 0.2).toFixed(1)} |
+| Avg Engagement/Cast | ${avgEngagementPerCast} | 30% | ${(avgEngagementPerCast * 0.3).toFixed(1)} |
+| Avg Casts/Day | ${avgCastsPerDay} | 20% | ${(avgCastsPerDay * 0.2).toFixed(1)} |
+| **Total Score** | - | 100% | **${totalScore}** |
+
+*Note: The total score is calculated using weighted metrics to provide a comprehensive view of channel performance.*
 
 ---
 
@@ -92,6 +112,45 @@ ${author.verifications && author.verifications.length > 0 ? `**Verified Addresse
     
     markdown += '---\n\n';
   });
+
+  // Add comparative table for top 30 authors
+  markdown += `## 📊 Top 30 Authors Comparison
+
+| Rank | Author | Casts | % of Total | Total Engagement | Avg Engagement/Cast | Followers | Score |
+|------|--------|-------|------------|------------------|-------------------|-----------|-------|
+`;
+
+  // Calculate scores for each author
+  const authorScores = authorStats.slice(0, 30).map(author => {
+    const totalEngagementAuthor = author.totalLikes + author.totalReplies + author.totalRecasts;
+    const avgEngagementPerCast = author.castCount > 0 ? (totalEngagementAuthor / author.castCount).toFixed(1) : 0;
+    
+    // Calculate author score based on weighted metrics
+    const score = (
+      (author.castCount * 0.3) + // 30% weight for cast count
+      (totalEngagementAuthor * 0.3) + // 30% weight for total engagement
+      (avgEngagementPerCast * 0.2) + // 20% weight for engagement per cast
+      (author.followerCount * 0.0002) // 20% weight for follower count (scaled down)
+    ).toFixed(1);
+
+    return {
+      ...author,
+      totalEngagementAuthor,
+      avgEngagementPerCast,
+      score
+    };
+  });
+
+  // Sort by score
+  authorScores.sort((a, b) => b.score - a.score);
+
+  // Add rows to the table
+  authorScores.forEach((author, index) => {
+    const percentageOfTotal = ((author.castCount / totalCasts) * 100).toFixed(1);
+    markdown += `| ${index + 1} | ${author.displayName || author.username} | ${author.castCount} | ${percentageOfTotal}% | ${author.totalEngagementAuthor} | ${author.avgEngagementPerCast} | ${author.followerCount.toLocaleString()} | **${author.score}** |\n`;
+  });
+
+  markdown += `\n*Note: Author scores are calculated using weighted metrics: Cast Count (30%), Total Engagement (30%), Avg Engagement/Cast (20%), and Follower Count (20%).*\n\n`;
 
   // Add engagement analysis
   markdown += `## 📈 Engagement Analysis
