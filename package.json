@@ -1,0 +1,22 @@
+{
+  "name": "fetch-farcaster-channel-info",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "analyze": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "GigaHierz",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@neynar/nodejs-sdk": "^2.44.0",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
