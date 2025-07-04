@@ -132,13 +132,13 @@ function analyzeCastsByAuthor(casts) {
  */
 async function main() {
   try {
-    // Configuration - May 2025 date range
+    // Configuration - June 2025 date range
     const channelId = "celo";
-    const startDate = new Date('2025-05-01T00:00:00Z'); // May 1st, 2025
-    const endDate = new Date('2025-05-31T23:59:59Z');   // May 31st, 2025
+    const startDate = new Date('2025-06-01T00:00:00Z'); // June 1st, 2025
+    const endDate = new Date('2025-06-30T23:59:59Z');   // June 30th, 2025
     const topN = 25;
     
-    console.log("🚀 Starting Celo Channel Analysis for May 2025...\n");
+    console.log("🚀 Starting Celo Channel Analysis for June 2025...\n");
     
     // Validate API key
     if (!process.env.NEYNAR_API_KEY) {
@@ -155,7 +155,7 @@ async function main() {
     const allCasts = await fetchChannelCasts(channelId, startDate, endDate);
     
     if (allCasts.length === 0) {
-      console.log("❌ No casts found in the specified time period (May 1-31, 2025).");
+      console.log("❌ No casts found in the specified time period (June 1-30, 2025).");
       return;
     }
     
@@ -164,7 +164,7 @@ async function main() {
     const authorStats = analyzeCastsByAuthor(allCasts);
     
     // Generate timestamp for filenames
-    const filename = `celo-analysis-may-2025`;
+    const filename = `celo-analysis-june-2025`;
     
     // Calculate days for reporting
     const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
@@ -199,7 +199,7 @@ async function main() {
     console.log("📈 ANALYSIS COMPLETE");
     console.log("=".repeat(60));
     console.log(`Channel: ${channelId}`);
-    console.log(`Time Period: May 1-31, 2025 (${daysDiff} days)`);
+    console.log(`Time Period: June 1-30, 2025 (${daysDiff} days)`);
     console.log(`Total Casts: ${allCasts.length.toLocaleString()}`);
     console.log(`Unique Authors: ${authorStats.length.toLocaleString()}`);
     if (authorStats.length > 0) {
